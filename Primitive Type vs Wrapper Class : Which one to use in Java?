@@ -1,0 +1,65 @@
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+public class ConsignmentDetail {
+    private long id;
+    private Float latitude;
+    private Float longitude;
+    private boolean isAssigned;
+}
+
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+public class OrderDetail {
+    private long id;
+    private String name;
+    private int quantity;
+    private boolean isActive;
+    private float weight;
+}
+
+
+import java.util.List;
+import java.util.Optional;
+
+public interface OrderManagementService {
+    Optional<ConsignmentDetail> scheduleOrder(List<OrderDetail> orderDetail, boolean isInternational, int userId);
+    boolean cancelOrder(int consignmentId);
+    void updateConsignment(ConsignmentDetail consignment, Integer latitude, Integer longitude) throws Exception;
+}
+
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.Optional;
+
+@Slf4j
+public class OrderManagementServiceImpl implements OrderManagementService {
+
+    @Override
+    public Optional<ConsignmentDetail> scheduleOrder(List<OrderDetail> orderDetailList, boolean isInternational, int userId) {
+        log.info("Generating consignment for user: {}", userId);
+        if(isInternational) {
+            ConsignmentDetail consignmentDetail = new ConsignmentDetail();
+            consignmentDetail.setAssigned(true);
+            float totalWeight = 0f;
+            for (OrderDetail orderDetail : orderDetailList) {
+                totalWeight += orderDetail.getWeight();
+            }
+            consignmentDetail.setTotalWeight(totalWeight);
+            return Optional.of(consignmentDetail);
+        }else {
+            return Optional.empty();
+        }
+    }
+}
+
+
